@@ -1,9 +1,9 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import healthcheckRouter from "./routes/healthcheck.routes.js";
+import healthcheck from "./routes/healthcheck.routes.js";
 import { ApiError } from "../utils/apiError.js";
 import {User} from "../models/user.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
-
+import { ApiResponse } from "../utils/apiResponse.js"
 
 const registerUser = asyncHandler( async (req, res) =>{
     //
@@ -55,11 +55,18 @@ const registerUser = asyncHandler( async (req, res) =>{
         username : username.toLowerCase()
     })
 
-    const createdUser = await User.findById(user._id) {
+    const createdUser = await User.findById(user._id).select(
+        "-password -refreshToken"
         //verifying user created
+    )  
+    if(!createdUser) {
+        throw new ApiError(500, "Something went wrong while registering user")
     }
 
-
+    return res
+        .status(201)
+        .json(new ApiResponse(200, createdUser, "User registered sucessfully"))
+   
 })
 
 export {

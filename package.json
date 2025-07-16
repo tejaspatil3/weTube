@@ -1,18 +1,19 @@
 {
-  "name": "videotube",
+  "name": "wetube",
   "version": "1.0.0",
   "description": "project inspired by youtube",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node -r dotenv/config src/index.js dotenv_config_path=C:/Users/Lenovo/Desktop/VSC2/webDevProjects/videoTube/src/.env",
-    "dev": "nodemon -r dotenv/config src/index.js dotenv_config_path=C:/Users/Lenovo/Desktop/VSC2/webDevProjects/videoTube/src/.env"
+    "start": "node -r dotenv/config src/index.js dotenv_config_path=C:/Users/Lenovo/Desktop/VSC2/webDevProjects/weTube/src/.env",
+    "dev": "nodemon -r dotenv/config src/index.js dotenv_config_path=C:/Users/Lenovo/Desktop/VSC2/webDevProjects/weTube/src/.env"
   },
   "keywords": [
-    "videoTube",
+    "weTube",
     "mongoose",
-    "express"
+    "express",
+    "nodejs"
   ],
   "author": "teja",
   "license": "ISC",
