@@ -1,5 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import healthcheck from "./routes/healthcheck.routes.js";
+// import { healthcheck } from "./routes/healthcheck.routes.js";
 import { ApiError } from "../utils/apiError.js";
 import {User} from "../models/user.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
@@ -31,19 +31,39 @@ const registerUser = asyncHandler( async (req, res) =>{
     if(existedUser){
         throw new ApiError(409, "User email or username already exist")
     }
-
-    const avatarLocalPath = req.files?.avatar[0]?.path
-    const coverImageLocalPath = req.files?.coverImage[0]?.path
+    console.warn(req.files)
+    const avatarLocalPath = req.files?.avatar?.[0]?.path
+    const coverImageLocalPath = req.files?.coverImage?.[0]?.path
 
     if(!avatarLocalPath) {
         throw new ApiError(400, "Avatar file is missing")
     }
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
 
-    let coverImage = ""
-    if(coverImageLocalPath) {
-        // throw new ApiError(400, "cover Image file is missing")
-        const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    // const avatar = await uploadOnCloudinary(avatarLocalPath)
+    // let coverImage = ""
+    // if(coverImageLocalPath) {
+    //     // throw new ApiError(400, "cover Image file is missing")
+    //     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    // }
+
+    let avatar;
+    try{
+        avatar = await uploadOnCloudinary(avatarLocalPath)
+        console.log("Uploaded avatar", avatar)
+
+    }catch(error){
+        console.log("Eoor uploading avatar",error)
+        throw new ApiError(500, "Failed to uplaod avatar")
+    }
+
+        let coverImage;
+    try{
+        coverImage = await uploadOnCloudinary(coverImageLocalPath)
+        console.log("Uploaded coverImage", coverImage)
+
+    }catch(error){
+        console.log("Error uploading coverImage",error)
+        throw new ApiError(500, "Failed to uplaod coverImage")
     }
 
     const user = await User.create({
@@ -57,7 +77,8 @@ const registerUser = asyncHandler( async (req, res) =>{
 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
-        //verifying user created
+        // verifying user created
+        // password and refreshToken not saved to db
     )  
     if(!createdUser) {
         throw new ApiError(500, "Something went wrong while registering user")
@@ -66,6 +87,8 @@ const registerUser = asyncHandler( async (req, res) =>{
     return res
         .status(201)
         .json(new ApiResponse(200, createdUser, "User registered sucessfully"))
+
+    
    
 })
 
