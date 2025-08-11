@@ -8,21 +8,31 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const uploadOnCloudinary = async(localFilePath) => {
-    try{
+const uploadOnCloudinary = async(localFilePath, subfolder) => {
+    try{    
+
+        if (!subfolder) {
+            console.error("Subfolder is not specified.");
+            fs.unlinkSync(localFilePath);
+            return null;
+        }
+
         if(!localFilePath) return null
         const response = await cloudinary.uploader.upload(
             localFilePath, {
-                resource_type: "auto"  //auto detect type of file
+                resource_type: "auto",
+                folder: `wetube/user/${subfolder}`
             }
         )
-        console.log("File Uploaded on Cloudinary. File src:" + response.url)
-        //remove from server after upload
+        console.log("File Uploaded on Cloudinary. File src : " + response.url)
         fs.unlinkSync(localFilePath)
         return response
     }catch(err) {
-        fs.unlinkSync(localFilePath)
-        return null
+        console.error("Error uploading file to Cloudinary:", err);
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);
+        }
+        return null;
     }
 }
 
